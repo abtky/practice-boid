@@ -1,4 +1,4 @@
-export class Vector2D {
+export default class Vector2D {
 
     public x: number;
     public y: number;
@@ -189,5 +189,3 @@ export class Vector2D {
         return this.x === v2.x && this.y === v2.y;
     }
 }
-
-export default Vector2D;
