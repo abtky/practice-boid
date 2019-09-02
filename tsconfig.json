@@ -2,9 +2,9 @@
   "compilerOptions": {
     "sourceMap": true,
     "experimentalDecorators": true,
-    "target": "es5",
+    "target": "es2017",
     "strict": true,
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "noImplicitThis": true,
@@ -14,5 +14,11 @@
     "paths": {
       "@/*": ["src/*"]
     }
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "test",
+    "umd",
+    "example"
+  ]
 }
