@@ -1,0 +1,36 @@
+{
+  "name": "study_template",
+  "version": "1.0.0",
+  "description": "This is template for private study",
+  "author": "Takuya Abe",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "dev": "nuxt --spa",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "json:build": "node ./db/data/index.js > ./db/index.json",
+    "json:server": "json-server --watch ./db/index.json --port 3004"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.5.4",
+    "nuxt": "^2.0.0"
+  },
+  "devDependencies": {
+    "@vue/test-utils": "^1.0.0-beta.27",
+    "babel-jest": "^24.1.0",
+    "css-loader": "^1.0.0",
+    "jest": "^24.1.0",
+    "node-sass": "^4.9.3",
+    "nodemon": "^1.18.9",
+    "normalize.css": "^8.0.1",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.0",
+    "ts-loader": "^6.0.4",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.2",
+    "vue-jest": "^3.0.3",
+    "vue-property-decorator": "^8.2.1"
+  }
+}
