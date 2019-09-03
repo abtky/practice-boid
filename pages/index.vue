@@ -25,6 +25,7 @@ class Index extends Vue {
     context: CanvasRenderingContext2D;
     timerId: Number;
     vehicle: SteeredVehicle;
+    vehicles: SteeredVehicle[];
     $refs!: {
         canvas: HTMLCanvasElement;
         canvasContainer: HTMLElement
@@ -33,14 +34,6 @@ class Index extends Vue {
         const rows: string[] = [];
         if(this.target) {
             rows.push(`target x: ${this.target.x} y: ${this.target.y}`);
-        }
-        if(this.vehicle) {
-            const px = parseInt(this.vehicle.position.x);
-            const py = parseInt(this.vehicle.position.y);
-            const vx = this.vehicle.velocity.x.toFixed(2);
-            const vy = this.vehicle.velocity.y.toFixed(2);
-            rows.push(`position x: ${px} y: ${py}`);
-            rows.push(`velocity x: ${vx} y: ${vy}`);
         }
         return rows.join('\n');
     }
@@ -55,11 +48,21 @@ class Index extends Vue {
         container.appendChild(this.canvas);
         console.log('container', container);
         console.log('start', this.start);
-        this.vehicle = new SteeredVehicle();
-        this.vehicle.velocity.x = 20;
-        this.vehicle.velocity.y = 80;
-        console.log( this.vehicle.velocity.angle );
+        this.vehicles = this.generateVehicles(300);
         this.start();
+    }
+    generateVehicles(amount: number) {
+        const result: SteeredVehicle[] = [];
+        while(result.length < amount) {
+            const vehicle: SteeredVehicle = new SteeredVehicle();
+            vehicle.velocity.x = Math.random() * 100 - 50;
+            vehicle.velocity.y = Math.random() * 100 - 50;
+            vehicle.position.x = Math.random() * 1280;
+            vehicle.position.y = Math.random() * 1280;
+            vehicle.maxSpeed = Math.random() + 2.0;
+            result.push(vehicle);
+        }
+        return result;
     }
     start() {
         cancelAnimationFrame(this.timerId);
@@ -76,9 +79,8 @@ class Index extends Vue {
     }
     loop() {
         cancelAnimationFrame(this.timerId);
+        console.time('loop');
         // console.log(this.target);
-        this.vehicle.seek(this.target);
-        this.vehicle.update();
         const canvas = this.canvas;
         const cw = canvas.width;
         const ch = canvas.height;
@@ -91,28 +93,33 @@ class Index extends Vue {
         context.closePath();
         context.fill();
         context.restore();
-        context.save();
-        const position = this.vehicle.position.clone();
-        while(position.x < 0) {
-            position.x += 1280;
-        };
-        while(position.y < 0) {
-            position.y += 1280;
-        };
-        position.x = position.x % 1280;
-        position.y = position.y % 1280;
-        this.vehicle.position = position;
-        context.translate(position.x, position.y);
-        context.rotate(this.vehicle.velocity.angle);
-        context.fillStyle = '#fff';
-        context.beginPath();
-        context.moveTo(10, 0);
-        context.lineTo(-10, 5);
-        context.lineTo(-10, -5);
-        //context.arc(0, 0, 2, 0, Math.PI * 2);
-        context.closePath();
-        context.fill();
-        context.restore();
+
+        this.vehicles.forEach(vehicle => {
+            vehicle.seek(this.target);
+            vehicle.update();
+            const position = vehicle.position.clone();
+            while(position.x < 0) {
+                position.x += 1280;
+            };
+            while(position.y < 0) {
+                position.y += 1280;
+            };
+            position.x = position.x % 1280;
+            position.y = position.y % 1280;
+            vehicle.position = position;
+            context.save();
+            context.translate(position.x, position.y);
+            context.rotate(vehicle.velocity.angle);
+            context.fillStyle = '#fff';
+            context.beginPath();
+            context.moveTo(10, 0);
+            context.lineTo(-10, 5);
+            context.lineTo(-10, -5);
+            //context.arc(0, 0, 2, 0, Math.PI * 2);
+            context.closePath();
+            context.fill();
+            context.restore();
+        });
 
         context.save();
         context.translate(this.target.x, this.target.y);
@@ -123,7 +130,7 @@ class Index extends Vue {
         context.closePath();
         context.fill();
         context.restore();
-        this.$forceUpdate();
+        console.timeEnd('loop');
         this.timerId = requestAnimationFrame(() => {
             this.loop();
         });

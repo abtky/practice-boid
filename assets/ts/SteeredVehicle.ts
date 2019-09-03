@@ -8,7 +8,7 @@ export default class SteeredVehicle extends Vehicle {
 
     constructor() {
         super();
-        this.maxForce = 0.1;
+        this.maxForce = 0.03;
         this.steeringForce = new Vector2D();
     }
 
