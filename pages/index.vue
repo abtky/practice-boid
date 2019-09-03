@@ -1,25 +1,53 @@
 <template>
   <div class="container">
-    <h1 class="title">
-      study_template??
-    </h1>
-    <div class="canvasContainer" ref="canvasContainer"></div>
+    <div class="canvasContainer" ref="canvasContainer">
+      <canvas
+              ref="canvas"
+              @click="onClick"></canvas>
+    </div>
+    <p class="console">{{getConsoleString()}}</p>
   </div>
 </template>
 
 <script lang="ts">
 import Logo from '~/components/Logo.vue'
 import Vehicle from "../assets/ts/Vehicle";
+import { Component, Vue } from 'vue-property-decorator';
+import SteeredVehicle from '../assets/ts/SteeredVehicle';
+import Vector2D from "../assets/ts/Vector2D";
 
-export default {
-    components: {},
-    canvas: HTMLCanvasElement,
-    context: CanvasRenderingContext2D,
-    timerId: Number,
-    vehicle: Vehicle,
+@Component({
+    components: {}
+})
+class Index extends Vue {
+    target: Vector2D;
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+    timerId: Number;
+    vehicle: SteeredVehicle;
+    $refs!: {
+        canvas: HTMLCanvasElement;
+        canvasContainer: HTMLElement
+    };
+    getConsoleString() {
+        const rows: string[] = [];
+        if(this.target) {
+            rows.push(`target x: ${this.target.x} y: ${this.target.y}`);
+        }
+        if(this.vehicle) {
+            const px = parseInt(this.vehicle.position.x);
+            const py = parseInt(this.vehicle.position.y);
+            const vx = this.vehicle.velocity.x.toFixed(2);
+            const vy = this.vehicle.velocity.y.toFixed(2);
+            rows.push(`position x: ${px} y: ${py}`);
+            rows.push(`velocity x: ${vx} y: ${vy}`);
+        }
+        return rows.join('\n');
+    }
     async mounted(): void {
+        this.target = new Vector2D(800, 200);
         await this.$nextTick();
-        this.canvas = document.createElement('canvas');
+        this.canvas = this.$refs.canvas;
         this.canvas.width = 1280;
         this.canvas.height = 1280;
         this.context = this.canvas.getContext('2d');
@@ -27,47 +55,84 @@ export default {
         container.appendChild(this.canvas);
         console.log('container', container);
         console.log('start', this.start);
-        this.vehicle = new Vehicle();
-        this.vehicle.velocity.x = 8;
-        this.vehicle.velocity.y = 2;
+        this.vehicle = new SteeredVehicle();
+        this.vehicle.velocity.x = 20;
+        this.vehicle.velocity.y = 80;
+        console.log( this.vehicle.velocity.angle );
         this.start();
-    },
-    methods: {
-        start() {
-            cancelAnimationFrame(this.timerId);
-            this.loop();
-        },
-        loop() {
-            cancelAnimationFrame(this.timerId);
-            this.vehicle.update();
-            const canvas = this.canvas;
-            const cw = canvas.width;
-            const ch = canvas.height;
-            const context = this.context;
-            context.clearRect(0, 0, cw, ch);
-            context.save();
-            context.fillStyle = '#000';
-            context.beginPath();
-            context.rect(0, 0, cw, ch);
-            context.closePath();
-            context.fill();
-            context.restore();
-            context.save();
-            const position = this.vehicle.position;
+    }
+    start() {
+        cancelAnimationFrame(this.timerId);
+        this.loop();
+    }
+    onClick(e) {
+        console.log(e);
+        console.log(this.target);
+        // this.target.x = e.offsetX * 2;
+        // this.target.y = e.offsetY * 2;
+        this.target = new Vector2D(e.offsetX * 2, e.offsetY * 2);
+        console.log(this.target);
+        this.$forceUpdate();
+    }
+    loop() {
+        cancelAnimationFrame(this.timerId);
+        // console.log(this.target);
+        this.vehicle.seek(this.target);
+        this.vehicle.update();
+        const canvas = this.canvas;
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const context = this.context;
+        context.clearRect(0, 0, cw, ch);
+        context.save();
+        context.fillStyle = '#000';
+        context.beginPath();
+        context.rect(0, 0, cw, ch);
+        context.closePath();
+        context.fill();
+        context.restore();
+        context.save();
+        const position = this.vehicle.position.clone();
+        while(position.x < 0) {
+            position.x += 1280;
+        };
+        while(position.y < 0) {
+            position.y += 1280;
+        };
+        position.x = position.x % 1280;
+        position.y = position.y % 1280;
+        this.vehicle.position = position;
+        context.translate(position.x, position.y);
+        context.rotate(this.vehicle.velocity.angle);
+        context.fillStyle = '#fff';
+        context.beginPath();
+        context.moveTo(10, 0);
+        context.lineTo(-10, 5);
+        context.lineTo(-10, -5);
+        //context.arc(0, 0, 2, 0, Math.PI * 2);
+        context.closePath();
+        context.fill();
+        context.restore();
 
-            context.translate( position.x % 1280, position.y % 1280 );
-            context.fillStyle = '#fff';
-            context.beginPath();
-            context.arc(0, 0, 2, 0, Math.PI * 2);
-            context.closePath();
-            context.fill();
-            context.restore();
-            this.timerId = requestAnimationFrame(() => {
-                this.loop();
-            });
-        }
+        context.save();
+        context.translate(this.target.x, this.target.y);
+        context.fillStyle = '#f00';
+        context.beginPath();
+        context.beginPath();
+        context.arc(0, 0, 8, 0, Math.PI * 2);
+        context.closePath();
+        context.fill();
+        context.restore();
+        this.$forceUpdate();
+        this.timerId = requestAnimationFrame(() => {
+            this.loop();
+        });
+    }
+    methods: {
+
     }
 }
+export default Index;
 </script>
 
 <style lang="scss">
@@ -82,7 +147,19 @@ export default {
     color: #f00;
   }
 }
-
+.console {
+  position: absolute;
+  border: solid 1px #ccc;
+  min-height: 20px;
+  top: 0;
+  left: 0;
+  color: #fff;
+  background: #000;
+  font-size: 12px;
+  padding: 4px 10px;
+  white-space: pre-wrap;
+  text-align: left;
+}
   .canvasContainer {
     width: 640px;
     height: 640px;

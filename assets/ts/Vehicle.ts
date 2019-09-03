@@ -4,10 +4,12 @@ export default class Vehicle {
     public position: Vector2D;
     public velocity: Vector2D;
     public maxSpeed: number;
+    public mass: number;
     constructor() {
         this.position = new Vector2D();
         this.velocity = new Vector2D();
-        this.maxSpeed = 1;
+        this.maxSpeed = 2.0;
+        this.mass = 2.0;
     }
 
     update() {
