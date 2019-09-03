@@ -169,8 +169,8 @@ export default class Vector2D {
      * このベクトルを与えられた数値で掛けた結果を取得
      * @param value
      */
-    mutiply(value: number): Vector2D {
-        return new Vector2D(this.x - value, this.y - value);
+    multiply(value: number): Vector2D {
+        return new Vector2D(this.x * value, this.y * value);
     }
 
     /**
