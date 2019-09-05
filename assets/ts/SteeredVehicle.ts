@@ -22,6 +22,7 @@ export default class SteeredVehicle extends Vehicle {
 
     /**
      * 追跡
+     * @param target
      */
     seek(target: Vector2D) {
         let desiredVelocity: Vector2D = target.subtract(this.position);
@@ -29,5 +30,17 @@ export default class SteeredVehicle extends Vehicle {
         desiredVelocity = desiredVelocity.multiply(this.maxSpeed);
         const force: Vector2D = desiredVelocity.subtract(this.velocity);
         this.steeringForce = this.steeringForce.add(force);
+    }
+
+    /**
+     * 逃避
+     * @param target
+     */
+    flee(target: Vector2D) {
+        let desiredVelocity: Vector2D = target.subtract(this.position);
+        desiredVelocity.normalize();
+        desiredVelocity = desiredVelocity.multiply(this.maxSpeed);
+        const force: Vector2D = desiredVelocity.subtract(this.velocity);
+        this.steeringForce = this.steeringForce.subtract(force);
     }
 }

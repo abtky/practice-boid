@@ -71,15 +71,13 @@ class Index extends Vue {
     onClick(e) {
         console.log(e);
         console.log(this.target);
-        // this.target.x = e.offsetX * 2;
-        // this.target.y = e.offsetY * 2;
         this.target = new Vector2D(e.offsetX * 2, e.offsetY * 2);
         console.log(this.target);
         this.$forceUpdate();
     }
     loop() {
         cancelAnimationFrame(this.timerId);
-        console.time('loop');
+        // console.time('loop');
         // console.log(this.target);
         const canvas = this.canvas;
         const cw = canvas.width;
@@ -94,9 +92,16 @@ class Index extends Vue {
         context.fill();
         context.restore();
 
-        this.vehicles.forEach(vehicle => {
-            vehicle.seek(this.target);
+        let target: Vector2D = this.target;
+        this.vehicles.forEach((vehicle, i) => {
+            if(i === 0) {
+                this.target = vehicle.position.clone();
+                // vehicle.seek(this.target);
+            } else {
+                vehicle.flee(target);
+            }
             vehicle.update();
+
             const position = vehicle.position.clone();
             while(position.x < 0) {
                 position.x += 1280;
@@ -130,7 +135,7 @@ class Index extends Vue {
         context.closePath();
         context.fill();
         context.restore();
-        console.timeEnd('loop');
+        // console.timeEnd('loop');
         this.timerId = requestAnimationFrame(() => {
             this.loop();
         });
