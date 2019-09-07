@@ -48,18 +48,19 @@ class Index extends Vue {
         container.appendChild(this.canvas);
         console.log('container', container);
         console.log('start', this.start);
-        this.vehicles = this.generateVehicles(300);
+        this.vehicles = this.generateVehicles(200);
         this.start();
     }
     generateVehicles(amount: number) {
         const result: SteeredVehicle[] = [];
         while(result.length < amount) {
             const vehicle: SteeredVehicle = new SteeredVehicle();
-            vehicle.velocity.x = Math.random() * 100 - 50;
-            vehicle.velocity.y = Math.random() * 100 - 50;
+            vehicle.velocity.x = Math.random() * 100;
+            // vehicle.velocity.x = Math.random() * 100 - 50;
+            // vehicle.velocity.y = Math.random() * 100 - 50;
             vehicle.position.x = Math.random() * 1280;
             vehicle.position.y = Math.random() * 1280;
-            vehicle.maxSpeed = Math.random() + 2.0;
+            // vehicle.maxSpeed = 2.0;
             result.push(vehicle);
         }
         return result;
@@ -94,23 +95,26 @@ class Index extends Vue {
 
         let target: Vector2D = this.target;
         this.vehicles.forEach((vehicle, i) => {
-            if(i === 0) {
-                this.target = vehicle.position.clone();
-                // vehicle.seek(this.target);
-            } else {
-                vehicle.flee(target);
-            }
+            // if(i === 0) {
+            //     this.target = vehicle.position.clone();
+            // } else {
+            // }
+            // vehicle.evade(this.vehicles[0]);
+            // vehicle.wander();
+            vehicle.seek(this.target);
+            vehicle.flock(this.vehicles);
+            //
             vehicle.update();
 
             const position = vehicle.position.clone();
-            while(position.x < 0) {
-                position.x += 1280;
-            };
-            while(position.y < 0) {
-                position.y += 1280;
-            };
-            position.x = position.x % 1280;
-            position.y = position.y % 1280;
+            // while(position.x < 0) {
+            //     position.x += 1280;
+            // };
+            // while(position.y < 0) {
+            //     position.y += 1280;
+            // };
+            // position.x = position.x % 1280;
+            // position.y = position.y % 1280;
             vehicle.position = position;
             context.save();
             context.translate(position.x, position.y);
