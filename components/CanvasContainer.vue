@@ -1,0 +1,94 @@
+<template>
+  <div class="canvasContainer" ref="canvasContainer">
+    <canvas ref="canvas" :width="width" :height="height" @click="onClick"></canvas>
+  </div>
+</template>
+
+<script lang="ts">
+import {Component, Prop, Vue} from 'vue-property-decorator'
+import SteeredVehicle from "../assets/ts/SteeredVehicle";
+import Vector2D from "../assets/ts/Vector2D";
+
+@Component({})
+export default class CanvasContainer extends Vue {
+    private domElement: HTMLCanvasElement;
+    private context: CanvasRenderingContext2D;
+    private width: number = 1;
+    private height: number = 1;
+    private scale: number = 1;
+    private canvasScale: number;
+    $refs!: {
+        canvas: HTMLCanvasElement;
+        canvasContainer: HTMLElement
+    };
+
+    mounted() {
+        const container = this.$refs.canvasContainer;
+        this.width = container.clientWidth * this.scale;
+        this.height = container.clientHeight * this.scale;
+        this.domElement = this.$refs.canvas;
+        this.context = this.domElement.getContext('2d');
+    }
+
+    init() {
+
+    }
+
+    clearCanvas() {
+        const canvas = this.domElement;
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const context = this.context;
+
+        // context.clearRect(0, 0, cw, ch);
+        context.save();
+        context.fillStyle = 'rgba(0, 0, 0, 0.08)';
+        context.beginPath();
+        context.rect(0, 0, cw, ch);
+        context.closePath();
+        context.fill();
+        context.restore();
+    }
+
+    drawVehicles(vehicles: SteeredVehicle[]) {
+        console.log('drawVehicles', vehicles.length);
+        const canvas = this.domElement;
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const context = this.context;
+        const scale = this.scale;
+
+        context.save();
+        context.fillStyle = '#fff';
+        context.beginPath();
+        vehicles.forEach((vehicle, i) => {
+            const position = vehicle.position.clone().multiply(cw);
+            // context.save();
+            // context.translate(position.x, position.y);
+            // context.rotate(vehicle.velocity.angle);
+
+            // context.beginPath();
+            context.rect(position.x, position.y, 1, 1);
+
+            // context.moveTo(5 * scale, 0);
+            // context.lineTo(-5 * scale, 2 * scale);
+            // context.lineTo(-5 * scale, -2 * scale);
+        });
+        context.closePath();
+        context.fill();
+        context.restore();
+    }
+
+    onClick(e) {
+        const scale: number = this.scale;
+        const pos = new Vector2D(e.offsetX / this.width, e.offsetY / this.height).multiply(scale);
+        console.log(pos);
+        // this.$forceUpdate();
+        this.$emit('click', pos);
+    }
+}
+</script>
+
+<style scoped>
+
+</style>

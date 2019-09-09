@@ -8,7 +8,7 @@ export default class Vehicle {
     constructor() {
         this.position = new Vector2D();
         this.velocity = new Vector2D();
-        this.maxSpeed = 8.0;
+        this.maxSpeed = .001;
         this.mass = 10.0;
     }
 

@@ -1,10 +1,6 @@
 <template>
   <div class="container">
-    <div class="canvasContainer" ref="canvasContainer">
-      <canvas
-              ref="canvas"
-              @click="onClick"></canvas>
-    </div>
+    <canvas-container ref="canvasComponent" @click="onClick"></canvas-container>
     <p class="console">{{getConsoleString()}}</p>
   </div>
 </template>
@@ -15,9 +11,11 @@ import Vehicle from "../assets/ts/Vehicle";
 import { Component, Vue } from 'vue-property-decorator';
 import SteeredVehicle from '../assets/ts/SteeredVehicle';
 import Vector2D from "../assets/ts/Vector2D";
+import CanvasContainer from '~/components/CanvasContainer.vue';
+
 
 @Component({
-    components: {}
+    components: {CanvasContainer}
 })
 class Index extends Vue {
     target: Vector2D;
@@ -27,8 +25,7 @@ class Index extends Vue {
     vehicle: SteeredVehicle;
     vehicles: SteeredVehicle[];
     $refs!: {
-        canvas: HTMLCanvasElement;
-        canvasContainer: HTMLElement
+        canvasComponent: CanvasContainer
     };
     getConsoleString() {
         const rows: string[] = [];
@@ -38,28 +35,19 @@ class Index extends Vue {
         return rows.join('\n');
     }
     async mounted(): void {
-        this.target = new Vector2D(800, 200);
+        this.target = new Vector2D(0.2, 0.6);
         await this.$nextTick();
-        this.canvas = this.$refs.canvas;
-        this.canvas.width = 1280;
-        this.canvas.height = 1280;
-        this.context = this.canvas.getContext('2d');
-        const container = this.$refs.canvasContainer;
-        container.appendChild(this.canvas);
-        console.log('container', container);
-        console.log('start', this.start);
-        this.vehicles = this.generateVehicles(200);
+        this.vehicles = this.generateVehicles(500);
         this.start();
     }
     generateVehicles(amount: number) {
         const result: SteeredVehicle[] = [];
         while(result.length < amount) {
             const vehicle: SteeredVehicle = new SteeredVehicle();
-            vehicle.velocity.x = Math.random() * 100;
-            // vehicle.velocity.x = Math.random() * 100 - 50;
-            // vehicle.velocity.y = Math.random() * 100 - 50;
-            vehicle.position.x = Math.random() * 1280;
-            vehicle.position.y = Math.random() * 1280;
+            vehicle.velocity.x = Math.random();
+            vehicle.velocity.y = Math.random();
+            vehicle.position.x = Math.random();
+            vehicle.position.y = Math.random();
             // vehicle.maxSpeed = 2.0;
             result.push(vehicle);
         }
@@ -69,76 +57,33 @@ class Index extends Vue {
         cancelAnimationFrame(this.timerId);
         this.loop();
     }
-    onClick(e) {
-        console.log(e);
-        console.log(this.target);
-        this.target = new Vector2D(e.offsetX * 2, e.offsetY * 2);
-        console.log(this.target);
-        this.$forceUpdate();
+    onClick(pos) {
+        console.log('onCLick: 01', pos);
+        console.log('onCLick: 02', this.target);
+        this.target = pos;
     }
     loop() {
         cancelAnimationFrame(this.timerId);
-        // console.time('loop');
-        // console.log(this.target);
-        const canvas = this.canvas;
-        const cw = canvas.width;
-        const ch = canvas.height;
-        const context = this.context;
-        context.clearRect(0, 0, cw, ch);
-        context.save();
-        context.fillStyle = '#000';
-        context.beginPath();
-        context.rect(0, 0, cw, ch);
-        context.closePath();
-        context.fill();
-        context.restore();
-
-        let target: Vector2D = this.target;
+        const canvas = this.$refs.canvasComponent;
+        canvas.clearCanvas();
         this.vehicles.forEach((vehicle, i) => {
-            // if(i === 0) {
-            //     this.target = vehicle.position.clone();
-            // } else {
-            // }
-            // vehicle.evade(this.vehicles[0]);
-            // vehicle.wander();
-            vehicle.seek(this.target);
+            while(vehicle.position.x < 0) {
+                vehicle.position.x += 1;
+            }
+            while(vehicle.position.x > 1) {
+                vehicle.position.x -= 1;
+            }
+            while(vehicle.position.y < 0) {
+                vehicle.position.y += 1;
+            }
+            while(vehicle.position.y > 1) {
+                vehicle.position.y -= 1;
+            }
             vehicle.flock(this.vehicles);
-            //
+            // vehicle.flee(this.target);
             vehicle.update();
-
-            const position = vehicle.position.clone();
-            // while(position.x < 0) {
-            //     position.x += 1280;
-            // };
-            // while(position.y < 0) {
-            //     position.y += 1280;
-            // };
-            // position.x = position.x % 1280;
-            // position.y = position.y % 1280;
-            vehicle.position = position;
-            context.save();
-            context.translate(position.x, position.y);
-            context.rotate(vehicle.velocity.angle);
-            context.fillStyle = '#fff';
-            context.beginPath();
-            context.moveTo(10, 0);
-            context.lineTo(-10, 5);
-            context.lineTo(-10, -5);
-            //context.arc(0, 0, 2, 0, Math.PI * 2);
-            context.closePath();
-            context.fill();
-            context.restore();
         });
-
-        context.save();
-        context.translate(this.target.x, this.target.y);
-        context.fillStyle = '#f00';
-        context.beginPath();
-        context.beginPath();
-        context.arc(0, 0, 8, 0, Math.PI * 2);
-        context.closePath();
-        context.fill();
-        context.restore();
+        canvas.drawVehicles(this.vehicles);
         // console.timeEnd('loop');
         this.timerId = requestAnimationFrame(() => {
             this.loop();
