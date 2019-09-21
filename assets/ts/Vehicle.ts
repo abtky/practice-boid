@@ -9,7 +9,7 @@ export default class Vehicle {
         this.position = new Vector2D();
         this.velocity = new Vector2D();
         this.maxSpeed = .001;
-        this.mass = 10.0;
+        this.mass = 1.0;
     }
 
     update() {

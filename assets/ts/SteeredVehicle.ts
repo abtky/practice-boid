@@ -18,17 +18,17 @@ export default class SteeredVehicle extends Vehicle {
 
     constructor() {
         super();
-        this.maxForce = 0.3;
+        this.maxForce = 0.01;
         this.steeringForce = new Vector2D();
         this.arrivalThreshold = 100;
 
         this.wanderAngle = 0;
         this.wanderDistance = 10;
         this.wanderRadius = 5;
-        this.wanderRange = 1;
+        this.wanderRange = 0.1;
 
-        this.viewDistance = .02;
-        this.closeDistance = .03;
+        this.viewDistance = .1;
+        this.closeDistance = .06;
     }
 
     update() {
@@ -118,19 +118,19 @@ export default class SteeredVehicle extends Vehicle {
      * 群行動
      * @param vehicles
      */
-    flock(vehicles: Vehicle[]): void {
+    flock(vehicles: Vehicle[]): Vector2D {
         // 視界内の`vehicle`に絞り込み
         const inViewVehicles: Vehicle[] = vehicles.filter(vehicle => {
             return this.isInView(vehicle);
         });
 
-        let velocityTotal: Vector2D = new Vector2D();
+        let velocityTotal: Vector2D = this.velocity.clone();
         let positionTotal: Vector2D = new Vector2D();
         if (inViewVehicles.length < 1) return;
         inViewVehicles.forEach(vehicle => {
             // 対象が近すぎる場合は逃避
             if(this.isClose(vehicle)) {
-                this.evade(vehicle);
+                this.flee(vehicle.position);
             }
             velocityTotal = velocityTotal.add(vehicle.velocity);
             positionTotal = positionTotal.add(vehicle.position);
@@ -139,10 +139,12 @@ export default class SteeredVehicle extends Vehicle {
         const averagePosition: Vector2D = positionTotal.divide(inViewVehicles.length);
 
         // 群の中心へ向かう
-        this.arrive(averagePosition);
+        this.seek(averagePosition);
 
         // 進行方向を群の平均に合わせる
         this.steeringForce = this.steeringForce.add(averageVelocity.subtract(this.velocity));
+
+        //return averagePosition;
     }
 
     /**

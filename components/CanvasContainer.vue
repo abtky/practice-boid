@@ -42,7 +42,7 @@ export default class CanvasContainer extends Vue {
 
         // context.clearRect(0, 0, cw, ch);
         context.save();
-        context.fillStyle = 'rgba(0, 0, 0, 0.08)';
+        context.fillStyle = 'rgba(0, 0, 0, 0.2)';
         context.beginPath();
         context.rect(0, 0, cw, ch);
         context.closePath();
@@ -62,19 +62,20 @@ export default class CanvasContainer extends Vue {
 
         vehicles.forEach((vehicle, i) => {
             const position = vehicle.position.multiply(cw);
-            // context.save();
-            // context.translate(position.x, position.y);
+            context.save();
             // context.rotate(vehicle.velocity.angle);
 
             // context.beginPath();
             // context.rect(position.x, position.y, 1, 1);
             context.beginPath();
-            context.arc(position.x, position.y, 1, 0, Math.PI * 2);
+            // context.arc(0, 0, 8, 0, Math.PI * 2);
+            context.arc(position.x, position.y, 2, 0, Math.PI * 2);
+            // context.moveTo(0.05 * scale, 0);
+            // context.lineTo(-0.05 * scale, 0.02 * scale);
+            // context.lineTo(-0.05 * scale, -0.02 * scale);
             context.closePath();
             context.fill();
-            // context.moveTo(5 * scale, 0);
-            // context.lineTo(-5 * scale, 2 * scale);
-            // context.lineTo(-5 * scale, -2 * scale);
+            context.restore();
         });
 
         context.restore();

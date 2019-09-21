@@ -6,6 +6,7 @@ export class VehicleGUI {
     private gui: any;
     private properties: SteeredVehicle;
     private target: SteeredVehicle[];
+    private intervalId: number = 0;
 
     constructor() {
         this.target = [];
@@ -15,20 +16,28 @@ export class VehicleGUI {
         this.add('wanderDistance');
         this.add('wanderRadius');
         this.add('wanderRange', 0, 1);
+        this.add('closeDistance', 0, 1);
     }
 
     addTarget(vehicles: SteeredVehicle[]) {
+        console.time('addTarget');
         this.target.push(...vehicles);
+        console.timeEnd('addTarget');
     }
 
     private add(property: string, min: number = 0, max: number = 100) {
-        this.gui.add(this.properties, property, min, max).onChange(() => this.update());
+        this.gui.add(this.properties, property, min, max).onChange(() => {
+            clearTimeout(this.intervalId);
+            this.intervalId = setTimeout(() => {
+                this.update()
+            }, 200)
+        });
     }
 
     private update() {
         console.log('update');
         this.target.forEach(vehicle => {
-            Object.keys(this.properties).forEach((key: string) => {
+            Object.keys(this.properties).forEach((key: any) => {
                 vehicle[key] = this.properties[key];
             });
         });

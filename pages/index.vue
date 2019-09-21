@@ -2,7 +2,6 @@
   <div>
     <div class="container">
       <canvas-container class="canvasContainer" ref="canvasComponent" @click="onClick"></canvas-container>
-      <p class="console">{{getConsoleString()}}</p>
     </div>
     <div>
       <button @click="onClickToggle">{{buttonLabel}}</button>
@@ -27,7 +26,7 @@ class Index extends Vue {
     target: SteeredVehicle;
     timerId: Number;
     vehicles: SteeredVehicle[];
-    gui: VehicleGUI = new VehicleGUI();
+    gui: VehicleGUI;
     isInProgress: boolean = false;
     $refs!: {
         canvasComponent: CanvasContainer
@@ -51,8 +50,12 @@ class Index extends Vue {
     }
     async mounted(): void {
         this.target = new SteeredVehicle();
+        this.gui = new VehicleGUI();
         await this.$nextTick();
         this.vehicles = this.generateVehicles(NUM_VEHICLES);
+        this.target.position.x = Math.random();
+        this.target.position.y = Math.random();
+        this.target.maxSpeed = .0005;
         this.gui.addTarget([this.target]);
         this.play();
     }
@@ -60,8 +63,8 @@ class Index extends Vue {
         const result: SteeredVehicle[] = [];
         while(result.length < amount) {
             const vehicle: SteeredVehicle = new SteeredVehicle();
-            vehicle.velocity.x = Math.random();
-            vehicle.velocity.y = Math.random();
+            vehicle.velocity.x = Math.random() * 20 - 1;
+            vehicle.velocity.y = Math.random() * 2 - 1;
             vehicle.position.x = Math.random();
             vehicle.position.y = Math.random();
             // vehicle.maxSpeed = 2.0;
@@ -94,9 +97,10 @@ class Index extends Vue {
 
         // console.time('calc');
         this.vehicles.forEach((vehicle, i) => {
-            this.edgeBehavior(vehicle);
+            // this.edgeBehavior(vehicle);
             vehicle.flock(this.vehicles);
-            vehicle.pursue(this.target);
+            // vehicle.seek(this.target.position);
+            // vehicle.pursue(this.target);
             vehicle.update();
         });
         // console.timeEnd('calc');
