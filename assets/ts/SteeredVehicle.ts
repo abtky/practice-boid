@@ -28,7 +28,7 @@ export default class SteeredVehicle extends Vehicle {
         this.wanderRange = 0.1;
 
         this.viewDistance = .1;
-        this.closeDistance = .06;
+        this.closeDistance = .04;
     }
 
     update() {
@@ -153,7 +153,7 @@ export default class SteeredVehicle extends Vehicle {
      * @param target
      */
     isInView(target: Vehicle): boolean {
-        if(this.position.distance(target.position) > this.viewDistance) {
+        if(this.position.isEquals(target.position) || this.position.distance(target.position) > this.viewDistance) {
             return false;
         }
         const heading: Vector2D = this.velocity.clone().normalize();
