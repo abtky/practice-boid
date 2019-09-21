@@ -1,5 +1,5 @@
 <template>
-  <div class="canvasContainer" ref="canvasContainer">
+  <div>
     <canvas ref="canvas" :width="width" :height="height" @click="onClick"></canvas>
   </div>
 </template>
@@ -19,11 +19,11 @@ export default class CanvasContainer extends Vue {
     private canvasScale: number;
     $refs!: {
         canvas: HTMLCanvasElement;
-        canvasContainer: HTMLElement
+        canvasContainer: HTMLElement;
     };
 
     mounted() {
-        const container = this.$refs.canvasContainer;
+        const container = this.$el;
         this.width = container.clientWidth * this.scale;
         this.height = container.clientHeight * this.scale;
         this.domElement = this.$refs.canvas;
@@ -51,7 +51,6 @@ export default class CanvasContainer extends Vue {
     }
 
     drawVehicles(vehicles: SteeredVehicle[], color: string = '#fff') {
-        console.log('drawVehicles', vehicles.length);
         const canvas = this.domElement;
         const cw = canvas.width;
         const ch = canvas.height;
@@ -60,22 +59,24 @@ export default class CanvasContainer extends Vue {
 
         context.save();
         context.fillStyle = color;
-        context.beginPath();
+
         vehicles.forEach((vehicle, i) => {
-            const position = vehicle.position.clone().multiply(cw);
+            const position = vehicle.position.multiply(cw);
             // context.save();
             // context.translate(position.x, position.y);
             // context.rotate(vehicle.velocity.angle);
 
             // context.beginPath();
-            context.rect(position.x, position.y, 2, 2);
-
+            // context.rect(position.x, position.y, 1, 1);
+            context.beginPath();
+            context.arc(position.x, position.y, 1, 0, Math.PI * 2);
+            context.closePath();
+            context.fill();
             // context.moveTo(5 * scale, 0);
             // context.lineTo(-5 * scale, 2 * scale);
             // context.lineTo(-5 * scale, -2 * scale);
         });
-        context.closePath();
-        context.fill();
+
         context.restore();
     }
 

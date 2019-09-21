@@ -1,7 +1,12 @@
 <template>
-  <div class="container">
-    <canvas-container ref="canvasComponent" @click="onClick"></canvas-container>
-    <p class="console">{{getConsoleString()}}</p>
+  <div>
+    <div class="container">
+      <canvas-container class="canvasContainer" ref="canvasComponent" @click="onClick"></canvas-container>
+      <p class="console">{{getConsoleString()}}</p>
+    </div>
+    <div>
+      <button @click="onClickToggle">{{buttonLabel}}</button>
+    </div>
   </div>
 </template>
 
@@ -10,36 +15,46 @@ import Logo from '~/components/Logo.vue'
 import Vehicle from "../assets/ts/Vehicle";
 import { Component, Vue } from 'vue-property-decorator';
 import SteeredVehicle from '../assets/ts/SteeredVehicle';
-import Vector2D from "../assets/ts/Vector2D";
 import CanvasContainer from '~/components/CanvasContainer.vue';
+import VehicleGUI from '../assets/ts/VehicleGUI';
 
+const NUM_VEHICLES: number = 400;
 
 @Component({
     components: {CanvasContainer}
 })
 class Index extends Vue {
     target: SteeredVehicle;
-    canvas: HTMLCanvasElement;
-    context: CanvasRenderingContext2D;
     timerId: Number;
-    vehicle: SteeredVehicle;
     vehicles: SteeredVehicle[];
+    gui: VehicleGUI = new VehicleGUI();
+    isInProgress: boolean = false;
     $refs!: {
         canvasComponent: CanvasContainer
     };
     getConsoleString() {
         const rows: string[] = [];
-        if(this.target) {
-            rows.push(`target x: ${this.target.position.x} y: ${this.target.position.y}`);
-        }
+        // if(this.target) {
+        //     rows.push(`target x: ${this.target.position.x} y: ${this.target.position.y}`);
+        // }
         return rows.join('\n');
     }
+    get buttonLabel(): string {
+        return this.isInProgress ? 'PAUSE' : 'PLAY';
+    }
+    onClickToggle() {
+        if (this.isInProgress) {
+            this.pause();
+        } else {
+            this.play();
+        }
+    }
     async mounted(): void {
-        /// this.target = new Vector2D(0.2, 0.6);
         this.target = new SteeredVehicle();
         await this.$nextTick();
-        this.vehicles = this.generateVehicles(500);
-        this.start();
+        this.vehicles = this.generateVehicles(NUM_VEHICLES);
+        this.gui.addTarget([this.target]);
+        this.play();
     }
     generateVehicles(amount: number) {
         const result: SteeredVehicle[] = [];
@@ -54,9 +69,14 @@ class Index extends Vue {
         }
         return result;
     }
-    start() {
+    play() {
         cancelAnimationFrame(this.timerId);
+        this.isInProgress = true;
         this.loop();
+    }
+    pause() {
+        cancelAnimationFrame(this.timerId);
+        this.isInProgress = false;
     }
     onClick(pos) {
         console.log('onCLick: 01', pos);
@@ -72,13 +92,17 @@ class Index extends Vue {
         this.target.update();
         canvas.drawVehicles([this.target], '#f00');
 
+        // console.time('calc');
         this.vehicles.forEach((vehicle, i) => {
             this.edgeBehavior(vehicle);
             vehicle.flock(this.vehicles);
             vehicle.pursue(this.target);
             vehicle.update();
         });
+        // console.timeEnd('calc');
+        // console.time('draw');
         canvas.drawVehicles(this.vehicles);
+        // console.timeEnd('draw');
         // console.timeEnd('loop');
         this.timerId = requestAnimationFrame(() => {
             this.loop();
@@ -109,15 +133,7 @@ export default Index;
 
 <style lang="scss">
 .container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  h1 {
-    color: #f00;
-  }
+  position: relative;
 }
 .console {
   position: absolute;

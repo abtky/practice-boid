@@ -123,19 +123,20 @@ export default class SteeredVehicle extends Vehicle {
         const inViewVehicles: Vehicle[] = vehicles.filter(vehicle => {
             return this.isInView(vehicle);
         });
+
+        let velocityTotal: Vector2D = new Vector2D();
+        let positionTotal: Vector2D = new Vector2D();
         if (inViewVehicles.length < 1) return;
-
-        let averageVelocity: Vector2D = Vehicle.calcAverageVelocity(inViewVehicles);
-        let averagePosition: Vector2D = Vehicle.calcAveragePosition(inViewVehicles);
         inViewVehicles.forEach(vehicle => {
-
             // 対象が近すぎる場合は逃避
             if(this.isClose(vehicle)) {
                 this.evade(vehicle);
             }
+            velocityTotal = velocityTotal.add(vehicle.velocity);
+            positionTotal = positionTotal.add(vehicle.position);
         });
-        // averageVelocity = averageVelocity.divide(inViewVehicles.length);
-        // averagePosition = averagePosition.divide(inViewVehicles.length);
+        const averageVelocity: Vector2D = velocityTotal.divide(inViewVehicles.length);
+        const averagePosition: Vector2D = positionTotal.divide(inViewVehicles.length);
 
         // 群の中心へ向かう
         this.arrive(averagePosition);
