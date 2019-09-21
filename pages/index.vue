@@ -18,7 +18,7 @@ import CanvasContainer from '~/components/CanvasContainer.vue';
     components: {CanvasContainer}
 })
 class Index extends Vue {
-    target: Vector2D;
+    target: SteeredVehicle;
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     timerId: Number;
@@ -30,12 +30,13 @@ class Index extends Vue {
     getConsoleString() {
         const rows: string[] = [];
         if(this.target) {
-            rows.push(`target x: ${this.target.x} y: ${this.target.y}`);
+            rows.push(`target x: ${this.target.position.x} y: ${this.target.position.y}`);
         }
         return rows.join('\n');
     }
     async mounted(): void {
-        this.target = new Vector2D(0.2, 0.6);
+        /// this.target = new Vector2D(0.2, 0.6);
+        this.target = new SteeredVehicle();
         await this.$nextTick();
         this.vehicles = this.generateVehicles(500);
         this.start();
@@ -60,27 +61,21 @@ class Index extends Vue {
     onClick(pos) {
         console.log('onCLick: 01', pos);
         console.log('onCLick: 02', this.target);
-        this.target = pos;
+        this.target.position = pos;
     }
     loop() {
         cancelAnimationFrame(this.timerId);
         const canvas = this.$refs.canvasComponent;
         canvas.clearCanvas();
+        this.edgeBehavior(this.target);
+        this.target.wander();
+        this.target.update();
+        canvas.drawVehicles([this.target], '#f00');
+
         this.vehicles.forEach((vehicle, i) => {
-            while(vehicle.position.x < 0) {
-                vehicle.position.x += 1;
-            }
-            while(vehicle.position.x > 1) {
-                vehicle.position.x -= 1;
-            }
-            while(vehicle.position.y < 0) {
-                vehicle.position.y += 1;
-            }
-            while(vehicle.position.y > 1) {
-                vehicle.position.y -= 1;
-            }
+            this.edgeBehavior(vehicle);
             vehicle.flock(this.vehicles);
-            // vehicle.flee(this.target);
+            vehicle.pursue(this.target);
             vehicle.update();
         });
         canvas.drawVehicles(this.vehicles);
@@ -89,8 +84,24 @@ class Index extends Vue {
             this.loop();
         });
     }
-    methods: {
 
+    /**
+     * vehicleの座標が画面外へ出てしまった際の処理
+     * @param vehicle
+     */
+    edgeBehavior(vehicle: Vehicle) {
+        while(vehicle.position.x < 0) {
+            vehicle.position.x += 1;
+        }
+        while(vehicle.position.x > 1) {
+            vehicle.position.x -= 1;
+        }
+        while(vehicle.position.y < 0) {
+            vehicle.position.y += 1;
+        }
+        while(vehicle.position.y > 1) {
+            vehicle.position.y -= 1;
+        }
     }
 }
 export default Index;

@@ -50,7 +50,7 @@ export default class CanvasContainer extends Vue {
         context.restore();
     }
 
-    drawVehicles(vehicles: SteeredVehicle[]) {
+    drawVehicles(vehicles: SteeredVehicle[], color: string = '#fff') {
         console.log('drawVehicles', vehicles.length);
         const canvas = this.domElement;
         const cw = canvas.width;
@@ -59,7 +59,7 @@ export default class CanvasContainer extends Vue {
         const scale = this.scale;
 
         context.save();
-        context.fillStyle = '#fff';
+        context.fillStyle = color;
         context.beginPath();
         vehicles.forEach((vehicle, i) => {
             const position = vehicle.position.clone().multiply(cw);
@@ -68,7 +68,7 @@ export default class CanvasContainer extends Vue {
             // context.rotate(vehicle.velocity.angle);
 
             // context.beginPath();
-            context.rect(position.x, position.y, 1, 1);
+            context.rect(position.x, position.y, 2, 2);
 
             // context.moveTo(5 * scale, 0);
             // context.lineTo(-5 * scale, 2 * scale);
