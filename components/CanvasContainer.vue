@@ -24,11 +24,10 @@ export default class CanvasContainer extends Vue {
     };
 
     mounted() {
-        const container = this.$el;
-        this.width = container.clientWidth * this.scale;
-        this.height = container.clientHeight * this.scale;
-        this.domElement = this.$refs.canvas;
-        this.context = this.domElement.getContext('2d');
+        window.addEventListener('resize', () => {
+            this.onResize();
+        });
+        this.onResize();
     }
 
     get aspectRatio() {
@@ -81,7 +80,15 @@ export default class CanvasContainer extends Vue {
         // this.$forceUpdate();
         // this.$emit('click', pos);
     }
-    
+
+    onResize() {
+        const container = this.$el;
+        this.width = container.clientWidth * this.scale;
+        this.height = container.clientHeight * this.scale;
+        this.domElement = this.$refs.canvas;
+        this.context = this.domElement.getContext('2d');
+    }
+
     /**
      * vehicleの座標が画面外へ出てしまった際の処理
      * @param vehicle

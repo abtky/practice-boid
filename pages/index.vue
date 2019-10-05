@@ -76,7 +76,7 @@ class Index extends Vue {
             vehicle.flock(this.vehicles);
             vehicle.update();
         });
-        canvas.drawVehicles(this.vehicles, '#fc0');
+        canvas.drawVehicles(this.vehicles, '#fff');
         this.timerId = requestAnimationFrame(() => {
             this.loop();
         });
