@@ -19,15 +19,11 @@ export default class Vector2D {
         return this.x === 0 && this.y === 0;
     }
 
-    get lengthSQ() {
-        return this.x * this.x + this.y * this.y;
-    }
-
     /**
      * ベクトルの大きさを取得
      */
     get length(): number {
-        return Math.sqrt(this.lengthSQ);
+        return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
     /**
@@ -83,22 +79,6 @@ export default class Vector2D {
     }
 
     /**
-     * ベクトルの向きを反転する
-     */
-    reverse(): Vector2D {
-        this.x = -this.x;
-        this.y = -this.y;
-        return this;
-    }
-
-    /**
-     * このベクトルが正規化されていれば真
-     */
-    get isNormalized(): boolean {
-        return this.length === 1.0;
-    }
-
-    /**
      * このベクトルと引数で与えられたベクトルの内積を計算する
      * @param v2
      */
@@ -107,46 +87,13 @@ export default class Vector2D {
     }
 
     /**
-     * ２つのベクトルの角度を計算する
-     */
-    static angleBetween(v1: Vector2D, v2: Vector2D): number {
-        if(!v1.isNormalized) {
-            v1 = v1.clone().normalize();
-        }
-        if(!v2.isNormalized) {
-            v2 = v2.clone().normalize();
-        }
-        return Math.acos(v1.dotProduct(v2));
-    }
-
-    /**
-     * このベクトルに垂直なベクトルを返す
-     */
-    get perpendicular() {
-        return new Vector2D(-this.y, this.x);
-    }
-
-    /**
-     * 与えられたベクトルがこのベクトルの右側にあるか判定
-     * @param v2
-     * @return {number} 左側なら−１、右側なら１
-     */
-    sign(v2: Vector2D): number {
-        return this.perpendicular.dotProduct(v2) < 0 ? -1 : 1;
-    }
-
-    distSQ(v2: Vector2D): number {
-        const dx: number = v2.x - this.x;
-        const dy: number = v2.y - this.y;
-        return dx * dx + dy * dy;
-    }
-
-    /**
      * このベクトルと与えられたベクトルの距離を計算する
      * @param v2
      */
     distance(v2: Vector2D): number {
-        return Math.sqrt(this.distSQ(v2));
+        const dx: number = v2.x - this.x;
+        const dy: number = v2.y - this.y;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     /**
