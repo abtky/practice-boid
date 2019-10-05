@@ -3,29 +3,18 @@ import Vector2D from "./Vector2D";
 
 export default class SteeredVehicle extends Vehicle {
 
-    public maxForce: number;
-    public steeringForce: Vector2D;
-    public arrivalThreshold: number;
-
-    public wanderAngle: number;
-    public wanderDistance: number;
-    public wanderRadius: number;
-    public wanderRange: number;
+    public maxForce: number;// 操舵力の最大値
+    public mass: number;// 質量
+    public steeringForce: Vector2D;// 操舵力の合計値
 
     public viewDistance: number;// 視界に入る距離
     public closeDistance: number;// 近付き判定の距離
 
-
     constructor() {
         super();
         this.maxForce = 0.01;
+        this.mass = 1.0;
         this.steeringForce = new Vector2D();
-        this.arrivalThreshold = 100;
-
-        this.wanderAngle = 0;
-        this.wanderDistance = 10;
-        this.wanderRadius = 5;
-        this.wanderRange = 0.1;
 
         this.viewDistance = .1;
         this.closeDistance = .04;
@@ -61,57 +50,6 @@ export default class SteeredVehicle extends Vehicle {
         desiredVelocity = desiredVelocity.multiply(this.maxSpeed);
         const force: Vector2D = desiredVelocity.subtract(this.velocity);
         this.steeringForce = this.steeringForce.subtract(force);
-    }
-
-    /**
-     * 到着（目的に近づくほど減速していく）
-     * @param target
-     */
-    arrive(target: Vector2D) {
-        let desiredVelocity: Vector2D = target.subtract(this.position);
-        desiredVelocity.normalize();
-        const distance: number = this.position.distance(target);
-        let speed = this.maxSpeed;
-        if (distance < this.arrivalThreshold) {
-            speed = this.maxSpeed * distance / this.arrivalThreshold;
-        }
-        desiredVelocity = desiredVelocity.multiply(speed);
-        const force: Vector2D = desiredVelocity.subtract(this.velocity);
-        this.steeringForce = this.steeringForce.add(force);
-    }
-
-    /**
-     * 追跡（対象の距離・進行方向を加味した追求）
-     * @param target
-     */
-    pursue(target: Vehicle) {
-        const lookAheadTime = this.position.distance(target.position) / this.maxSpeed;
-        const predictedTarget: Vector2D = target.position.add(target.velocity.multiply(lookAheadTime));
-        this.seek(predictedTarget);
-
-    }
-
-    /**
-     * 回避（対象の距離・進行方向を加味した逃避）
-     * @param target
-     */
-    evade(target: Vehicle) {
-        const lookAheadTime = this.position.distance(target.position) / this.maxSpeed;
-        const predictedTarget: Vector2D = target.position.add(target.velocity.multiply(lookAheadTime));
-        this.flee(predictedTarget);
-    }
-
-    /**
-     * 徘徊
-     */
-    wander() {
-        const center: Vector2D = this.velocity.clone().normalize().multiply(this.wanderDistance);
-        const offset: Vector2D = new Vector2D();
-        offset.length = this.wanderRadius;
-        offset.angle = this.wanderAngle;
-        this.wanderAngle += Math.random() * this.wanderRange - this.wanderRange * .5;
-        const force: Vector2D = center.add(offset);
-        this.steeringForce = this.steeringForce.add(force);
     }
 
     /**
