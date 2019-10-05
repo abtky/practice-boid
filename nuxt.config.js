@@ -1,6 +1,6 @@
 
 export default {
-  mode: 'universal',
+  mode: 'spa',
   /*
   ** Headers of the page
   */
@@ -49,7 +49,13 @@ export default {
     /*
     ** You can extend webpack config here
     */
-    extend(config, ctx) {
+    extend(config, { isDev, isClient }) {
+      config.module.rules.unshift({
+        test: /\.worker\.ts$/,
+        loader: 'worker-loader'
+      });
+      // HMR時にWebWorkerでwindow is not definedになる問題対策
+      config.output.globalObject = 'this';
     }
   }
 }
