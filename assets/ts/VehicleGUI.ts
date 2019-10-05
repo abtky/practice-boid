@@ -3,21 +3,23 @@ import * as dat from 'dat.gui';
 
 export class VehicleGUI {
 
-    private gui: any;
-    private properties: SteeredVehicle;
+    private gui: dat.GUI;
+    private sampleObject: SteeredVehicle;
+    private variableKeys: string[];
     private target: SteeredVehicle[];
     private intervalId: number = 0;
 
     constructor() {
         this.target = [];
         this.initContainer();
+        this.sampleObject = new SteeredVehicle();
         this.gui = new dat.GUI();
-        this.properties = new SteeredVehicle();
-        this.add('wanderAngle', 0, Math.PI * 2);
-        this.add('wanderDistance');
-        this.add('wanderRadius');
-        this.add('wanderRange', 0, 1);
-        this.add('closeDistance', 0, 1);
+        this.variableKeys = [];
+        this.add('maxSpeed', 0, 0.01);
+        this.add('maxForce', 0, 1.0);
+        this.add('mass', 0, 100);
+        this.add('viewDistance', 0, 0.5);
+        this.add('closeDistance', 0, 0.2);
     }
 
     initContainer() {
@@ -38,7 +40,8 @@ export class VehicleGUI {
     }
 
     private add(property: string, min: number = 0, max: number = 100) {
-        this.gui.add(this.properties, property, min, max).onChange(() => {
+        this.variableKeys.push(property);
+        this.gui.add(this.sampleObject, property, min, max).onChange(() => {
             clearTimeout(this.intervalId);
             this.intervalId = setTimeout(() => {
                 this.update()
@@ -47,10 +50,11 @@ export class VehicleGUI {
     }
 
     private update() {
-        console.log('update');
+        console.log('update', this.target.length);
+        const keys: string[] = this.variableKeys;
         this.target.forEach(vehicle => {
-            Object.keys(this.properties).forEach((key: any) => {
-                vehicle[key] = this.properties[key];
+            keys.forEach((key: any) => {
+                vehicle[key] = this.sampleObject[key];
             });
         });
     }

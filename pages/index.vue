@@ -16,7 +16,7 @@ import SteeredVehicle from '../assets/ts/SteeredVehicle';
 import CanvasContainer from '~/components/CanvasContainer.vue';
 import VehicleGUI from '../assets/ts/VehicleGUI';
 
-const NUM_VEHICLES: number = 400;
+const NUM_VEHICLES: number = 300;
 
 @Component({
     components: {CanvasContainer}
@@ -43,6 +43,7 @@ class Index extends Vue {
         this.gui = new VehicleGUI();
         await this.$nextTick();
         this.vehicles = this.generateVehicles(NUM_VEHICLES);
+        this.gui.addTarget(this.vehicles);
         this.play();
     }
     generateVehicles(amount: number) {
@@ -72,10 +73,12 @@ class Index extends Vue {
         const canvas = this.$refs.canvasComponent;
         canvas.clearCanvas();
 
-        this.vehicles.forEach((vehicle, i) => {
+        console.time('calcPositions');
+        this.vehicles.forEach(vehicle => {
             vehicle.flock(this.vehicles);
             vehicle.update();
         });
+        console.timeEnd('calcPositions');
         canvas.drawVehicles(this.vehicles, '#fff');
         this.timerId = requestAnimationFrame(() => {
             this.loop();

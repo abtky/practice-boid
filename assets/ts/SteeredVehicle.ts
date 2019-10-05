@@ -29,34 +29,39 @@ export default class SteeredVehicle extends Vehicle {
     }
 
     /**
-     * 追求
+     * 追求 (targetの方向へ向かう)
      * @param target
      */
     seek(target: Vector2D) {
-        let desiredVelocity: Vector2D = target.subtract(this.position);
-        desiredVelocity.normalize();
-        desiredVelocity = desiredVelocity.multiply(this.maxSpeed);
-        const force: Vector2D = desiredVelocity.subtract(this.velocity);
+        const force: Vector2D = this.calcVelocity(target);
         this.steeringForce = this.steeringForce.add(force);
     }
 
     /**
-     * 逃避
+     * 逃避 (targetの逆方向へ向かう)
      * @param target
      */
     flee(target: Vector2D) {
+        const force: Vector2D = this.calcVelocity(target);
+        this.steeringForce = this.steeringForce.subtract(force);
+    }
+
+    /**
+     * ターゲット方向へ向かう速度を取得
+     * @param target
+     */
+    private calcVelocity(target: Vector2D): Vector2D {
         let desiredVelocity: Vector2D = target.subtract(this.position);
         desiredVelocity.normalize();
         desiredVelocity = desiredVelocity.multiply(this.maxSpeed);
-        const force: Vector2D = desiredVelocity.subtract(this.velocity);
-        this.steeringForce = this.steeringForce.subtract(force);
+        return desiredVelocity.subtract(this.velocity);
     }
 
     /**
      * 群行動
      * @param vehicles
      */
-    flock(vehicles: Vehicle[]): Vector2D {
+    flock(vehicles: Vehicle[]) {
         // 視界内の`vehicle`に絞り込み
         const inViewVehicles: Vehicle[] = vehicles.filter(vehicle => {
             return this.isInView(vehicle);
@@ -81,8 +86,6 @@ export default class SteeredVehicle extends Vehicle {
 
         // 進行方向を群の平均に合わせる
         this.steeringForce = this.steeringForce.add(averageVelocity.subtract(this.velocity));
-
-        //return averagePosition;
     }
 
     /**
