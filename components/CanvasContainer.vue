@@ -8,6 +8,7 @@
 import {Component, Prop, Vue} from 'vue-property-decorator'
 import SteeredVehicle from "../assets/ts/SteeredVehicle";
 import Vector2D from "../assets/ts/Vector2D";
+import Vehicle from "../assets/ts/Vehicle";
 
 @Component({})
 export default class CanvasContainer extends Vue {
@@ -15,7 +16,7 @@ export default class CanvasContainer extends Vue {
     private context: CanvasRenderingContext2D;
     private width: number = 1;
     private height: number = 1;
-    private scale: number = 1;
+    private scale: number = 0.5;
     private canvasScale: number;
     $refs!: {
         canvas: HTMLCanvasElement;
@@ -30,8 +31,8 @@ export default class CanvasContainer extends Vue {
         this.context = this.domElement.getContext('2d');
     }
 
-    init() {
-
+    get aspectRatio() {
+        return this.height / this.width;
     }
 
     clearCanvas() {
@@ -40,9 +41,8 @@ export default class CanvasContainer extends Vue {
         const ch = canvas.height;
         const context = this.context;
 
-        // context.clearRect(0, 0, cw, ch);
         context.save();
-        context.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        context.fillStyle = 'rgba(0, 0, 0, 0.1)';
         context.beginPath();
         context.rect(0, 0, cw, ch);
         context.closePath();
@@ -61,18 +61,11 @@ export default class CanvasContainer extends Vue {
         context.fillStyle = color;
 
         vehicles.forEach((vehicle, i) => {
+            this.edgeBehavior(vehicle);
             const position = vehicle.position.multiply(cw);
             context.save();
-            // context.rotate(vehicle.velocity.angle);
-
-            // context.beginPath();
-            // context.rect(position.x, position.y, 1, 1);
             context.beginPath();
-            // context.arc(0, 0, 8, 0, Math.PI * 2);
-            context.arc(position.x, position.y, 2, 0, Math.PI * 2);
-            // context.moveTo(0.05 * scale, 0);
-            // context.lineTo(-0.05 * scale, 0.02 * scale);
-            // context.lineTo(-0.05 * scale, -0.02 * scale);
+            context.arc(position.x, position.y, 0.5, 0, Math.PI * 2);
             context.closePath();
             context.fill();
             context.restore();
@@ -86,7 +79,27 @@ export default class CanvasContainer extends Vue {
         const pos = new Vector2D(e.offsetX / this.width, e.offsetY / this.height).multiply(scale);
         console.log(pos);
         // this.$forceUpdate();
-        this.$emit('click', pos);
+        // this.$emit('click', pos);
+    }
+    
+    /**
+     * vehicleの座標が画面外へ出てしまった際の処理
+     * @param vehicle
+     */
+    edgeBehavior(vehicle: Vehicle) {
+        const aspectRatio: number = this.aspectRatio;
+        while(vehicle.position.x < 0) {
+            vehicle.position.x += 1;
+        }
+        while(vehicle.position.x > 1) {
+            vehicle.position.x -= 1;
+        }
+        while(vehicle.position.y < 0) {
+            vehicle.position.y += aspectRatio;
+        }
+        while(vehicle.position.y > aspectRatio) {
+            vehicle.position.y -= aspectRatio;
+        }
     }
 }
 </script>

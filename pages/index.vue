@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="container">
-      <canvas-container class="canvasContainer" ref="canvasComponent" @click="onClick"></canvas-container>
+      <canvas-container class="canvasContainer" ref="canvasComponent"></canvas-container>
     </div>
     <div>
       <button @click="onClickToggle">{{buttonLabel}}</button>
@@ -10,7 +10,6 @@
 </template>
 
 <script lang="ts">
-import Logo from '~/components/Logo.vue'
 import Vehicle from "../assets/ts/Vehicle";
 import { Component, Vue } from 'vue-property-decorator';
 import SteeredVehicle from '../assets/ts/SteeredVehicle';
@@ -23,7 +22,6 @@ const NUM_VEHICLES: number = 400;
     components: {CanvasContainer}
 })
 class Index extends Vue {
-    target: SteeredVehicle;
     timerId: Number;
     vehicles: SteeredVehicle[];
     gui: VehicleGUI;
@@ -31,13 +29,6 @@ class Index extends Vue {
     $refs!: {
         canvasComponent: CanvasContainer
     };
-    getConsoleString() {
-        const rows: string[] = [];
-        // if(this.target) {
-        //     rows.push(`target x: ${this.target.position.x} y: ${this.target.position.y}`);
-        // }
-        return rows.join('\n');
-    }
     get buttonLabel(): string {
         return this.isInProgress ? 'PAUSE' : 'PLAY';
     }
@@ -49,21 +40,16 @@ class Index extends Vue {
         }
     }
     async mounted(): void {
-        this.target = new SteeredVehicle();
         this.gui = new VehicleGUI();
         await this.$nextTick();
         this.vehicles = this.generateVehicles(NUM_VEHICLES);
-        this.target.position.x = Math.random();
-        this.target.position.y = Math.random();
-        this.target.maxSpeed = .0005;
-        this.gui.addTarget([this.target]);
         this.play();
     }
     generateVehicles(amount: number) {
         const result: SteeredVehicle[] = [];
         while(result.length < amount) {
             const vehicle: SteeredVehicle = new SteeredVehicle();
-            vehicle.velocity.x = Math.random() * 20 - 1;
+            vehicle.velocity.x = Math.random() * 2 - 1;
             vehicle.velocity.y = Math.random() * 2 - 1;
             vehicle.position.x = Math.random();
             vehicle.position.y = Math.random();
@@ -81,84 +67,46 @@ class Index extends Vue {
         cancelAnimationFrame(this.timerId);
         this.isInProgress = false;
     }
-    onClick(pos) {
-        console.log('onCLick: 01', pos);
-        console.log('onCLick: 02', this.target);
-        this.target.position = pos;
-    }
     loop() {
         cancelAnimationFrame(this.timerId);
         const canvas = this.$refs.canvasComponent;
         canvas.clearCanvas();
-        this.edgeBehavior(this.target);
-        this.target.wander();
-        this.target.update();
-        canvas.drawVehicles([this.target], '#f00');
 
-        // console.time('calc');
         this.vehicles.forEach((vehicle, i) => {
-            // this.edgeBehavior(vehicle);
             vehicle.flock(this.vehicles);
-            // vehicle.seek(this.target.position);
-            // vehicle.pursue(this.target);
             vehicle.update();
         });
-        // console.timeEnd('calc');
-        // console.time('draw');
-        canvas.drawVehicles(this.vehicles);
-        // console.timeEnd('draw');
-        // console.timeEnd('loop');
+        canvas.drawVehicles(this.vehicles, '#fc0');
         this.timerId = requestAnimationFrame(() => {
             this.loop();
         });
-    }
-
-    /**
-     * vehicleの座標が画面外へ出てしまった際の処理
-     * @param vehicle
-     */
-    edgeBehavior(vehicle: Vehicle) {
-        while(vehicle.position.x < 0) {
-            vehicle.position.x += 1;
-        }
-        while(vehicle.position.x > 1) {
-            vehicle.position.x -= 1;
-        }
-        while(vehicle.position.y < 0) {
-            vehicle.position.y += 1;
-        }
-        while(vehicle.position.y > 1) {
-            vehicle.position.y -= 1;
-        }
     }
 }
 export default Index;
 </script>
 
 <style lang="scss">
+body {
+  position: relative;
+  height: 100%;
+}
 .container {
   position: relative;
+  height: 100vh;
 }
-.console {
+.canvasContainer {
+  width: 100%;
+  height: 100%;
+  background: #ccc;
   position: absolute;
-  border: solid 1px #ccc;
-  min-height: 20px;
   top: 0;
+  bottom: 0;
   left: 0;
-  color: #fff;
-  background: #000;
-  font-size: 12px;
-  padding: 4px 10px;
-  white-space: pre-wrap;
-  text-align: left;
-}
-  .canvasContainer {
-    width: 640px;
-    height: 640px;
-    background: #ccc;
-    canvas {
-      width: 100%;
-      height: 100%;
-    }
+  right: 0;
+  margin: auto;
+  canvas {
+    width: 100%;
+    height: 100%;
   }
+}
 </style>
