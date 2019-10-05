@@ -10,6 +10,7 @@ export class VehicleGUI {
 
     constructor() {
         this.target = [];
+        this.initContainer();
         this.gui = new dat.GUI();
         this.properties = new SteeredVehicle();
         this.add('wanderAngle', 0, Math.PI * 2);
@@ -17,6 +18,17 @@ export class VehicleGUI {
         this.add('wanderRadius');
         this.add('wanderRange', 0, 1);
         this.add('closeDistance', 0, 1);
+    }
+
+    initContainer() {
+        const elementContainer: NodeListOf<HTMLElement> | undefined = document.querySelectorAll('.dg.ac');
+        console.log('elementContainer', elementContainer);
+        if(!elementContainer) {
+            return;
+        }
+        elementContainer.forEach(element => {
+            element.textContent = null;
+        })
     }
 
     addTarget(vehicles: SteeredVehicle[]) {
