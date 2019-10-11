@@ -1,6 +1,9 @@
 
 export default {
   mode: 'spa',
+  router: {
+    base: '/boids/'
+  },
   /*
   ** Headers of the page
   */

@@ -1,20 +1,20 @@
 <template>
-  <div>
-    <div class="container">
-      <canvas-container class="canvasContainer" ref="canvasComponent"></canvas-container>
-    </div>
+  <no-ssr>
     <div>
-      <button @click="onClickToggle">{{buttonLabel}}</button>
+      <div class="container">
+        <canvas-container class="canvasContainer" ref="canvasComponent"></canvas-container>
+      </div>
     </div>
-  </div>
+  </no-ssr>
 </template>
 
 <script lang="ts">
-import Vehicle from "../assets/ts/Vehicle";
 import { Component, Vue } from 'vue-property-decorator';
 import SteeredVehicle from '../assets/ts/SteeredVehicle';
-import CanvasContainer from '~/components/CanvasContainer.vue';
+import CanvasContainer from '../components/CanvasContainer.vue';
 import VehicleGUI from '../assets/ts/VehicleGUI';
+import Worker from '~/assets/ts/index.worker';
+import WorkerController from '../assets/ts/WorkerController';
 
 const NUM_VEHICLES: number = 300;
 
@@ -25,28 +25,35 @@ class Index extends Vue {
     timerId: Number;
     vehicles: SteeredVehicle[];
     gui: VehicleGUI;
-    isInProgress: boolean = false;
+    isPlay: boolean = false;
+    worker: WorkerController;
     $refs!: {
         canvasComponent: CanvasContainer
     };
-    get buttonLabel(): string {
-        return this.isInProgress ? 'PAUSE' : 'PLAY';
-    }
-    onClickToggle() {
-        if (this.isInProgress) {
-            this.pause();
-        } else {
-            this.play();
-        }
-    }
     async mounted(): void {
         this.gui = new VehicleGUI();
         await this.$nextTick();
         this.vehicles = this.generateVehicles(NUM_VEHICLES);
         this.gui.addTarget(this.vehicles);
+        await this.$nextTick();
+        this.worker = this.initWorker();
+        this.gui.on('togglePlay', value => {
+            console.log('onTogglePlay');
+            if (value) {
+                this.play();
+            } else {
+                this.pause();
+            }
+        });
         this.play();
     }
-    generateVehicles(amount: number) {
+    initWorker(): WorkerController {
+        const worker: Worker = new Worker();
+        const workerController: WorkerController = new WorkerController(worker);
+        workerController.init(this.vehicles);
+        return workerController;
+    }
+    generateVehicles(amount: number): SteeredVehicle[] {
         const result: SteeredVehicle[] = [];
         while(result.length < amount) {
             const vehicle: SteeredVehicle = new SteeredVehicle();
@@ -54,32 +61,35 @@ class Index extends Vue {
             vehicle.velocity.y = Math.random() * 2 - 1;
             vehicle.position.x = Math.random();
             vehicle.position.y = Math.random();
-            // vehicle.maxSpeed = 2.0;
             result.push(vehicle);
         }
         return result;
     }
     play() {
-        cancelAnimationFrame(this.timerId);
-        this.isInProgress = true;
+        this.isPlay = true;
+        this.worker.play();
         this.loop();
     }
     pause() {
-        cancelAnimationFrame(this.timerId);
-        this.isInProgress = false;
+        this.worker.pause();
+        this.isPlay = false;
     }
     loop() {
         cancelAnimationFrame(this.timerId);
         const canvas = this.$refs.canvasComponent;
         canvas.clearCanvas();
 
-        console.time('calcPositions');
-        this.vehicles.forEach(vehicle => {
-            vehicle.flock(this.vehicles);
-            vehicle.update();
-        });
-        console.timeEnd('calcPositions');
+        // console.time('calcPositions');
+        if (this.isPlay) {
+            this.vehicles.forEach(vehicle => {
+                vehicle.update();
+            });
+        }
+        // console.timeEnd('calcPositions');
+
+        // console.time('draw');
         canvas.drawVehicles(this.vehicles, '#fff');
+        // console.timeEnd('draw');
         this.timerId = requestAnimationFrame(() => {
             this.loop();
         });
