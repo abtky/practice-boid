@@ -31,13 +31,18 @@ class Index extends Vue {
         canvasComponent: CanvasContainer
     };
     async mounted(): void {
-        this.gui = new VehicleGUI();
+
+        this.vehicles = [];
+            //this.vehicles = this.generateVehicles(NUM_VEHICLES);
         await this.$nextTick();
-        this.vehicles = this.generateVehicles(NUM_VEHICLES);
-        this.gui.addTarget(this.vehicles);
-        await this.$nextTick();
+        this.gui = this.initGUI();
         this.worker = this.initWorker();
-        this.gui.on('togglePlay', value => {
+        this.play();
+    }
+    initGUI(): VehicleGUI {
+        const gui = new VehicleGUI();
+        gui.addTarget(this.vehicles);
+        gui.on('togglePlay', value => {
             console.log('onTogglePlay');
             if (value) {
                 this.play();
@@ -45,7 +50,15 @@ class Index extends Vue {
                 this.pause();
             }
         });
-        this.play();
+        gui.on('changeNumbers', value => {
+            console.log('onChangeNumbers');
+            if (value > this.vehicles.length) {
+                this.increaseVehicles(value);
+            } else {
+                this.vehicles.splice(value);
+            }
+        });
+        return gui;
     }
     initWorker(): WorkerController {
         const worker: Worker = new Worker();
@@ -53,8 +66,8 @@ class Index extends Vue {
         workerController.init(this.vehicles);
         return workerController;
     }
-    generateVehicles(amount: number): SteeredVehicle[] {
-        const result: SteeredVehicle[] = [];
+    increaseVehicles(amount: number): SteeredVehicle[] {
+        const result: SteeredVehicle[] = this.vehicles;
         while(result.length < amount) {
             const vehicle: SteeredVehicle = new SteeredVehicle();
             vehicle.velocity.x = Math.random() * 2 - 1;

@@ -24,10 +24,19 @@ export class VehicleGUI extends EventEmitter {
         this.add('closeDistance', 0, 0.2);
 
         const options = {
-            play: true
+            play: true,
+            numVehicles: 300
         };
         this.gui.add(options, 'play').onChange(value => {
             this.emit('togglePlay', value);
+        });
+
+        let throttleId = 0;
+        this.gui.add(options, 'numVehicles', 1, 1000).onChange(value => {
+            clearTimeout(throttleId);
+            throttleId = setTimeout(() => {
+                this.emit('changeNumbers', value);
+            }, 200);
         });
     }
 
