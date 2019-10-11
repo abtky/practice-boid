@@ -8,7 +8,6 @@ export class VehicleGUI extends EventEmitter {
     private sampleObject: SteeredVehicle;
     private variableKeys: string[];
     public target: SteeredVehicle[];
-    private intervalId: number = 0;
 
     constructor() {
         super();
@@ -64,15 +63,16 @@ export class VehicleGUI extends EventEmitter {
 
     private add(property: string, min: number = 0, max: number = 100) {
         this.variableKeys.push(property);
+        let throttleId = 0;
         this.gui.add(this.sampleObject, property, min, max).onChange(() => {
-            clearTimeout(this.intervalId);
-            this.intervalId = setTimeout(() => {
-                this.update()
+            clearTimeout(throttleId);
+            throttleId = setTimeout(() => {
+                this.update();
             }, 200)
         });
     }
 
-    private update() {
+    public update() {
         console.log('update', this.target.length);
         const keys: string[] = this.variableKeys;
         this.target.forEach(vehicle => {

@@ -57,6 +57,7 @@ class Index extends Vue {
                 this.vehicles.splice(value);
             }
             gui.target = this.vehicles;
+            gui.update();
         });
         gui.init();
         return gui;
