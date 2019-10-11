@@ -2,7 +2,6 @@ import SteeredVehicle from './SteeredVehicle';
 import WorkerController, { SimpleVehicleList } from '~/assets/ts/WorkerController';
 
 addEventListener('message', e => {
-    // `data` にはメインから渡された `100` が入ってくる。
     const { data } = e;
     const receivedList: SimpleVehicleList = JSON.parse(data);
     const vehicles: SteeredVehicle[] = WorkerController.generateFromSimpleList(receivedList);
