@@ -1,7 +1,8 @@
 import SteeredVehicle from "./SteeredVehicle";
 import * as dat from 'dat.gui';
+import { EventEmitter } from 'events';
 
-export class VehicleGUI {
+export class VehicleGUI extends EventEmitter {
 
     private gui: dat.GUI;
     private sampleObject: SteeredVehicle;
@@ -10,16 +11,24 @@ export class VehicleGUI {
     private intervalId: number = 0;
 
     constructor() {
+        super();
         this.target = [];
         this.initContainer();
         this.sampleObject = new SteeredVehicle();
         this.gui = new dat.GUI();
         this.variableKeys = [];
-        this.add('maxSpeed', 0, 0.01);
+        this.add('maxSpeed', 0, .01);
         this.add('maxForce', 0, 1.0);
-        this.add('mass', 0, 100);
+        this.add('mass', 0.001, 100);
         this.add('viewDistance', 0, 0.5);
         this.add('closeDistance', 0, 0.2);
+
+        const options = {
+            play: true
+        };
+        this.gui.add(options, 'play').onChange(value => {
+            this.emit('togglePlay', value);
+        });
     }
 
     initContainer() {
@@ -33,7 +42,7 @@ export class VehicleGUI {
         })
     }
 
-    addTarget(vehicles: SteeredVehicle[]) {
+    addTarget(vehicles: SteeredVehicle[]): void {
         console.time('addTarget');
         this.target.push(...vehicles);
         console.timeEnd('addTarget');

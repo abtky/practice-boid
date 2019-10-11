@@ -16,8 +16,7 @@ export default class CanvasContainer extends Vue {
     private context: CanvasRenderingContext2D;
     private width: number = 1;
     private height: number = 1;
-    private scale: number = 0.5;
-    private canvasScale: number;
+    private scale: number = 1;
     $refs!: {
         canvas: HTMLCanvasElement;
         canvasContainer: HTMLElement;
@@ -58,18 +57,17 @@ export default class CanvasContainer extends Vue {
 
         context.save();
         context.fillStyle = color;
-
+        const pi2: number = Math.PI * 2;
         vehicles.forEach((vehicle, i) => {
             this.edgeBehavior(vehicle);
             const position = vehicle.position.multiply(cw);
-            context.save();
+
             context.beginPath();
-            context.arc(position.x, position.y, 0.5, 0, Math.PI * 2);
+            context.arc(position.x, position.y, 1, 0, pi2);
             context.closePath();
             context.fill();
-            context.restore();
-        });
 
+        });
         context.restore();
     }
 
