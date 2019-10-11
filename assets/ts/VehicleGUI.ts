@@ -7,7 +7,7 @@ export class VehicleGUI extends EventEmitter {
     private gui: dat.GUI;
     private sampleObject: SteeredVehicle;
     private variableKeys: string[];
-    private target: SteeredVehicle[];
+    public target: SteeredVehicle[];
     private intervalId: number = 0;
 
     constructor() {
@@ -17,6 +17,9 @@ export class VehicleGUI extends EventEmitter {
         this.sampleObject = new SteeredVehicle();
         this.gui = new dat.GUI();
         this.variableKeys = [];
+    }
+
+    init() {
         this.add('maxSpeed', 0, .01);
         this.add('maxForce', 0, 1.0);
         this.add('mass', 0.001, 100);
@@ -38,9 +41,11 @@ export class VehicleGUI extends EventEmitter {
                 this.emit('changeNumbers', value);
             }, 200);
         });
+
+        this.emit('changeNumbers', options.numVehicles);
     }
 
-    initContainer() {
+    private initContainer() {
         const elementContainer: NodeListOf<HTMLElement> | undefined = document.querySelectorAll('.dg.ac');
         console.log('elementContainer', elementContainer);
         if(!elementContainer) {

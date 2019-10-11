@@ -41,7 +41,6 @@ class Index extends Vue {
     }
     initGUI(): VehicleGUI {
         const gui = new VehicleGUI();
-        gui.addTarget(this.vehicles);
         gui.on('togglePlay', value => {
             console.log('onTogglePlay');
             if (value) {
@@ -57,7 +56,9 @@ class Index extends Vue {
             } else {
                 this.vehicles.splice(value);
             }
+            gui.target = this.vehicles;
         });
+        gui.init();
         return gui;
     }
     initWorker(): WorkerController {
