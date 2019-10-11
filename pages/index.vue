@@ -74,7 +74,7 @@ class Index extends Vue {
             vehicle.velocity.x = Math.random() * 2 - 1;
             vehicle.velocity.y = Math.random() * 2 - 1;
             vehicle.position.x = Math.random();
-            vehicle.position.y = Math.random();
+            vehicle.position.y = Math.random() * this.$refs.canvasComponent.aspectRatio;
             result.push(vehicle);
         }
         return result;
