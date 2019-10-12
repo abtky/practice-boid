@@ -1,11 +1,12 @@
 
 export default {
-  mode: 'universal',
+  mode: 'spa',
+  router: {},
   /*
   ** Headers of the page
   */
   head: {
-    title: process.env.npm_package_name || '',
+    titleTemplate: 'study: %s',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -49,7 +50,13 @@ export default {
     /*
     ** You can extend webpack config here
     */
-    extend(config, ctx) {
+    extend(config, { isDev, isClient }) {
+      config.module.rules.unshift({
+        test: /\.worker\.ts$/,
+        loader: 'worker-loader'
+      });
+      // HMR時にWebWorkerでwindow is not definedになる問題対策
+      config.output.globalObject = 'this';
     }
   }
 }

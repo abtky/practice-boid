@@ -19,7 +19,9 @@
     "@types/jest": "^24.0.18",
     "babel-core": "^6.26.3",
     "dat.gui": "^0.7.6",
-    "nuxt": "^2.0.0"
+    "events": "^3.0.0",
+    "nuxt": "^2.0.0",
+    "nuxt-property-decorator": "^2.4.0"
   },
   "devDependencies": {
     "@vue/test-utils": "^1.0.0-beta.27",
@@ -36,6 +38,7 @@
     "ts-node": "^8.3.0",
     "typescript": "^3.5.2",
     "vue-jest": "^3.0.3",
-    "vue-property-decorator": "^8.2.1"
+    "vue-property-decorator": "^8.2.1",
+    "worker-loader": "^2.0.0"
   }
 }
