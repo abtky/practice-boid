@@ -7,7 +7,7 @@
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
 import SteeredVehicle from '../assets/ts/SteeredVehicle';
-import BoidsRenderer from '../components/BoidsRenderer';
+import BoidsRenderer from '../components/boids/BoidsRenderer';
 import BoidsGUI from '../assets/ts/BoidsGUI';
 import Worker from '~/assets/ts/index.worker';
 import WorkerController from '../assets/ts/WorkerController';

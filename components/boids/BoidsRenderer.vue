@@ -2,7 +2,7 @@
 import {Component, Prop, Vue} from 'nuxt-property-decorator';
 import Vehicle from '../assets/ts/Vehicle';
 import SteeredVehicle from '../assets/ts/SteeredVehicle';
-import CanvasContainer from './CanvasContainer';
+import CanvasContainer from '../CanvasContainer';
 
 @Component
 export default class BoidsRenderer extends CanvasContainer {
