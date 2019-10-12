@@ -12,8 +12,8 @@ export default class PhysicsBall {
     private bounce: number = -.6;
 
     constructor() {
-        this.velocity = new Vector2D(40, -10);
-        this.position = new Vector2D(1, 40);
+        this.velocity = new Vector2D(40, -100);
+        this.position = new Vector2D(1, 400);
     }
 
     update(elapsedTime: number) {
@@ -30,6 +30,5 @@ export default class PhysicsBall {
     }
     bounceY() {
         this.velocity.y *= this.bounce;
-        console.log('this.velocity.y', this.velocity.y);
     }
 }

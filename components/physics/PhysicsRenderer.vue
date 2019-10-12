@@ -25,7 +25,7 @@ export default class PhysicsRenderer extends CanvasContainer {
         context.save();
         context.fillStyle = color;
         const pi2: number = Math.PI * 2;
-        const position = ball.position.multiply(PhysicsBall.PIXEL_PER_FOOT);
+        const position = ball.position;
         this.edgeBehavior(ball);
 
         context.beginPath();
@@ -36,15 +36,15 @@ export default class PhysicsRenderer extends CanvasContainer {
     }
 
     edgeBehavior(ball: PhysicsBall) {
-        if(ball.position.y > ( this.height - ball.radius ) / PhysicsBall.PIXEL_PER_FOOT) {
-            ball.position.y = ( this.height - ball.radius ) / PhysicsBall.PIXEL_PER_FOOT;
+        if(ball.position.y > this.height - ball.radius) {
+            ball.position.y = this.height - ball.radius;
             ball.bounceY();
         }
-        if(ball.position.x > ( this.width - ball.radius ) / PhysicsBall.PIXEL_PER_FOOT) {
-            ball.position.x = ( this.width - ball.radius ) / PhysicsBall.PIXEL_PER_FOOT
+        if(ball.position.x > this.width - ball.radius) {
+            ball.position.x = this.width - ball.radius;
             ball.bounceX();
-        } else if(ball.position.x < ball.radius / PhysicsBall.PIXEL_PER_FOOT) {
-            ball.position.x = ball.radius / PhysicsBall.PIXEL_PER_FOOT;
+        } else if(ball.position.x < ball.radius) {
+            ball.position.x = ball.radius;
             ball.bounceX();
         }
     }
