@@ -2,7 +2,7 @@
   <no-ssr>
     <div>
       <div class="container">
-        <canvas-container class="canvasContainer" ref="canvasComponent"></canvas-container>
+        <boids-renderer class="canvasContainer" ref="canvasComponent"></boids-renderer>
       </div>
     </div>
   </no-ssr>
@@ -11,24 +11,24 @@
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
 import SteeredVehicle from '../assets/ts/SteeredVehicle';
-import CanvasContainer from '../components/CanvasContainer.vue';
-import VehicleGUI from '../assets/ts/VehicleGUI';
+import BoidsRenderer from '../components/BoidsRenderer';
+import BoidsGUI from '../assets/ts/BoidsGUI';
 import Worker from '~/assets/ts/index.worker';
 import WorkerController from '../assets/ts/WorkerController';
 
 const NUM_VEHICLES: number = 300;
 
 @Component({
-    components: {CanvasContainer}
+    components: {BoidsRenderer}
 })
 class Boids extends Vue {
     timerId: Number;
     vehicles: SteeredVehicle[];
-    gui: VehicleGUI;
+    gui: BoidsGUI;
     isPlay: boolean = false;
     worker: WorkerController;
     $refs!: {
-        canvasComponent: CanvasContainer
+        canvasComponent: BoidsRenderer
     };
     head () {
         return {
@@ -44,8 +44,8 @@ class Boids extends Vue {
         this.worker = this.initWorker();
         this.play();
     }
-    initGUI(): VehicleGUI {
-        const gui = new VehicleGUI();
+    initGUI(): BoidsGUI {
+        const gui = new BoidsGUI();
         gui.on('togglePlay', value => {
             console.log('onTogglePlay');
             if (value) {

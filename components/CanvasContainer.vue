@@ -5,18 +5,15 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from 'vue-property-decorator'
-import SteeredVehicle from "../assets/ts/SteeredVehicle";
-import Vector2D from "../assets/ts/Vector2D";
-import Vehicle from "../assets/ts/Vehicle";
+import {Component, Prop, Vue} from 'nuxt-property-decorator';
 
-@Component({})
+@Component
 export default class CanvasContainer extends Vue {
-    private domElement: HTMLCanvasElement;
-    private context: CanvasRenderingContext2D;
-    private width: number = 1;
-    private height: number = 1;
-    private scale: number = 1;
+    protected domElement: HTMLCanvasElement;
+    protected context: CanvasRenderingContext2D;
+    protected width: number = 1;
+    protected height: number = 1;
+    protected scale: number = 1;
     $refs!: {
         canvas: HTMLCanvasElement;
         canvasContainer: HTMLElement;
@@ -33,78 +30,12 @@ export default class CanvasContainer extends Vue {
         return this.height / this.width;
     }
 
-    clearCanvas() {
-        const canvas = this.domElement;
-        const cw = canvas.width;
-        const ch = canvas.height;
-        const context = this.context;
-
-        context.save();
-        context.fillStyle = 'rgba(0, 0, 0, 0.1)';
-        context.beginPath();
-        context.rect(0, 0, cw, ch);
-        context.closePath();
-        context.fill();
-        context.restore();
-    }
-
-    drawVehicles(vehicles: SteeredVehicle[], color: string = '#fff') {
-        const canvas = this.domElement;
-        const cw = canvas.width;
-        const ch = canvas.height;
-        const context = this.context;
-        const scale = this.scale;
-
-        context.save();
-        context.fillStyle = color;
-        const pi2: number = Math.PI * 2;
-        vehicles.forEach((vehicle, i) => {
-            this.edgeBehavior(vehicle);
-            const position = vehicle.position.multiply(cw);
-
-            context.beginPath();
-            context.arc(position.x, position.y, 1, 0, pi2);
-            context.closePath();
-            context.fill();
-
-        });
-        context.restore();
-    }
-
-    onClick(e) {
-        const scale: number = this.scale;
-        const pos = new Vector2D(e.offsetX / this.width, e.offsetY / this.height).multiply(scale);
-        console.log(pos);
-        // this.$forceUpdate();
-        // this.$emit('click', pos);
-    }
-
     onResize() {
         const container = this.$el;
         this.width = container.clientWidth * this.scale;
         this.height = container.clientHeight * this.scale;
         this.domElement = this.$refs.canvas;
         this.context = this.domElement.getContext('2d');
-    }
-
-    /**
-     * vehicleの座標が画面外へ出てしまった際の処理
-     * @param vehicle
-     */
-    edgeBehavior(vehicle: Vehicle) {
-        const aspectRatio: number = this.aspectRatio;
-        while(vehicle.position.x < 0) {
-            vehicle.position.x += 1;
-        }
-        while(vehicle.position.x > 1) {
-            vehicle.position.x -= 1;
-        }
-        while(vehicle.position.y < 0) {
-            vehicle.position.y += aspectRatio;
-        }
-        while(vehicle.position.y > aspectRatio) {
-            vehicle.position.y -= aspectRatio;
-        }
     }
 }
 </script>

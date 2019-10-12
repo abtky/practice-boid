@@ -2,7 +2,7 @@ import SteeredVehicle from "./SteeredVehicle";
 import * as dat from 'dat.gui';
 import { EventEmitter } from 'events';
 
-export class VehicleGUI extends EventEmitter {
+export class BoidsGUI extends EventEmitter {
 
     private gui: dat.GUI;
     private sampleObject: SteeredVehicle;
@@ -83,4 +83,4 @@ export class VehicleGUI extends EventEmitter {
     }
 }
 
-export default VehicleGUI;
+export default BoidsGUI;
