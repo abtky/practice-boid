@@ -8,6 +8,7 @@
 import { Component, Vue } from 'nuxt-property-decorator';
 import PhysicsRenderer from '../components/physics/PhysicsRenderer';
 import PhysicsBall from '../assets/scripts/physics/PhysicsBall';
+import VarletPoint from '../components/physics/VarletPoint';
 
 @Component({
     components: {PhysicsRenderer}
@@ -23,10 +24,13 @@ class Physics extends Vue {
     };
     isPlay: boolean = false;
     eulerBall: PhysicsBall = new PhysicsBall();
+    point: VarletPoint = new VarletPoint(10, 20);
     timerId: number = 0;
     previousTime: number;
     async mounted() {
         await this.$nextTick();
+        this.point.vx = 8;
+        this.point.vy = 10;
         this.play();
     }
     play() {
@@ -44,9 +48,11 @@ class Physics extends Vue {
         const now: number = new Date().getTime();
         const elapsedTime: number = ( now - this.previousTime ) / 1000;
 
+        this.point.update();
         this.eulerBall.update(elapsedTime);
         this.$refs.canvas.clearCanvas();
         this.$refs.canvas.drawBall(this.eulerBall);
+        this.$refs.canvas.drawPoint(this.point, 12);
         this.previousTime = now;
         this.timerId = requestAnimationFrame(() => {
             this.loop();

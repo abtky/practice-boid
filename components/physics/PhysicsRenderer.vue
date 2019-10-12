@@ -2,6 +2,7 @@
 import {Component, Prop, Vue} from 'nuxt-property-decorator';
 import CanvasContainer from '../CanvasContainer';
 import PhysicsBall from '../../assets/scripts/physics/PhysicsBall';
+import VarletPoint from './VarletPoint';
 
 @Component
 export default class PhysicsRenderer extends CanvasContainer {
@@ -13,6 +14,24 @@ export default class PhysicsRenderer extends CanvasContainer {
 
         context.save();
         context.clearRect(0, 0, cw, ch);
+        context.restore();
+    }
+
+    drawPoint(point: VarletPoint, radius: number, color: string = '#f00') {
+        const canvas = this.domElement;
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const context = this.context;
+
+        context.save();
+        context.fillStyle = color;
+        const pi2: number = Math.PI * 2;
+        // this.edgeBehavior(ball);
+
+        context.beginPath();
+        context.arc(point.x, point.y, radius, 0, pi2);
+        context.closePath();
+        context.fill();
         context.restore();
     }
 

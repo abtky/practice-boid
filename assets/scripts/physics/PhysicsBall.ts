@@ -9,7 +9,7 @@ export default class PhysicsBall {
     private position: Vector2D;
     private velocity: Vector2D;
     public radius: number = 30.0;
-    private bounce: number = -.6; //
+    private bounce: number = -.96; //
 
     constructor() {
         this.velocity = new Vector2D(300, -20).divide(PhysicsBall.PIXEL_PER_FOOT);
