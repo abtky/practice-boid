@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'nuxt-property-decorator';
 import SteeredVehicle from '../assets/ts/SteeredVehicle';
 import CanvasContainer from '../components/CanvasContainer.vue';
 import VehicleGUI from '../assets/ts/VehicleGUI';
@@ -21,7 +21,7 @@ const NUM_VEHICLES: number = 300;
 @Component({
     components: {CanvasContainer}
 })
-class Index extends Vue {
+class Boids extends Vue {
     timerId: Number;
     vehicles: SteeredVehicle[];
     gui: VehicleGUI;
@@ -30,6 +30,11 @@ class Index extends Vue {
     $refs!: {
         canvasComponent: CanvasContainer
     };
+    head () {
+        return {
+            title: 'physics'
+        }
+    }
     async mounted(): void {
 
         this.vehicles = [];
@@ -110,7 +115,7 @@ class Index extends Vue {
         });
     }
 }
-export default Index;
+export default Boids;
 </script>
 
 <style lang="scss">

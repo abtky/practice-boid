@@ -20,7 +20,8 @@
     "babel-core": "^6.26.3",
     "dat.gui": "^0.7.6",
     "events": "^3.0.0",
-    "nuxt": "^2.0.0"
+    "nuxt": "^2.0.0",
+    "nuxt-property-decorator": "^2.4.0"
   },
   "devDependencies": {
     "@vue/test-utils": "^1.0.0-beta.27",
