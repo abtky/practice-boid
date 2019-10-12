@@ -1,5 +1,5 @@
 import Vehicle from "./Vehicle";
-import Vector2D from "./Vector2D";
+import Vector2D from "../geom/Vector2D";
 
 export default class SteeredVehicle extends Vehicle {
 

@@ -1,11 +1,7 @@
 <template>
-  <no-ssr>
-    <div>
-      <div class="container">
-        <boids-renderer class="canvasContainer" ref="canvasComponent"></boids-renderer>
-      </div>
-    </div>
-  </no-ssr>
+  <div class="container">
+    <boids-renderer class="canvasContainer" ref="canvasComponent"></boids-renderer>
+  </div>
 </template>
 
 <script lang="ts">
@@ -32,7 +28,7 @@ class Boids extends Vue {
     };
     head () {
         return {
-            title: 'physics'
+            title: 'boids'
         }
     }
     async mounted(): void {
@@ -118,7 +114,7 @@ class Boids extends Vue {
 export default Boids;
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 body {
   position: relative;
   height: 100%;
@@ -126,20 +122,5 @@ body {
 .container {
   position: relative;
   height: 100vh;
-}
-.canvasContainer {
-  width: 100%;
-  height: 100%;
-  background: #ccc;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  canvas {
-    width: 100%;
-    height: 100%;
-  }
 }
 </style>

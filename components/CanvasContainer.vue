@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <canvas ref="canvas" :width="width" :height="height" @click="onClick"></canvas>
+  <div class="canvasContainer">
+    <canvas ref="canvas" :width="width" :height="height"></canvas>
   </div>
 </template>
 
@@ -41,5 +41,20 @@ export default class CanvasContainer extends Vue {
 </script>
 
 <style scoped>
+.canvasContainer {
+  width: 100%;
+  height: 100%;
+  background: #ccc;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  canvas {
+    width: 100%;
+    height: 100%;
+  }
+}
 
 </style>
