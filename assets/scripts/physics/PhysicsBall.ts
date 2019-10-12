@@ -2,33 +2,40 @@ import Vector2D from "../geom/Vector2D";
 
 export default class PhysicsBall {
 
-    static PIXEL_PER_FOOT: number = 10;
-    static GRAVITY: number = 32;
+    static PIXEL_PER_FOOT: number = 60; // １フィートあたりのピクセル換算値
+    static GRAVITY: number = 32;　// 重力加速度：32ft/s^2
 
-    public position: Vector2D;
+
+    private position: Vector2D;
     private velocity: Vector2D;
-    public radius: number = 12.0;
-    private gravity: number = 32;
-    private bounce: number = -.6;
+    public radius: number = 30.0;
+    private bounce: number = -.6; //
 
     constructor() {
-        this.velocity = new Vector2D(40, -100);
-        this.position = new Vector2D(1, 400);
+        this.velocity = new Vector2D(300, -20).divide(PhysicsBall.PIXEL_PER_FOOT);
+        this.position = new Vector2D(40, 50).divide(PhysicsBall.PIXEL_PER_FOOT);
     }
 
     update(elapsedTime: number) {
         const acceleration: Vector2D = new Vector2D(0, PhysicsBall.GRAVITY);
 
-        this.position.x += this.velocity.x * elapsedTime;
-        this.position.y += this.velocity.y * elapsedTime;
-        this.velocity.x += acceleration.x * elapsedTime;
-        this.velocity.y += acceleration.y * elapsedTime;
+        this.position = this.position.add(this.velocity.multiply(elapsedTime));
+        this.velocity = this.velocity.add(acceleration.multiply(elapsedTime));
     }
 
-    bounceX() {
+    /**
+     * レンダリング用にフィート→ピクセル換算した座標の取得
+     */
+    get display(): Vector2D {
+        return this.position.multiply(PhysicsBall.PIXEL_PER_FOOT);
+    }
+
+    bounceX(displayX: number) {
+        this.position.x = displayX / PhysicsBall.PIXEL_PER_FOOT;
         this.velocity.x *= this.bounce;
     }
-    bounceY() {
+    bounceY(displayY: number) {
+        this.position.y = displayY / PhysicsBall.PIXEL_PER_FOOT;
         this.velocity.y *= this.bounce;
     }
 }
