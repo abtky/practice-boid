@@ -3,9 +3,15 @@ import {Component, Prop, Vue} from 'nuxt-property-decorator';
 import CanvasContainer from '../CanvasContainer';
 import PhysicsBall from '../../assets/scripts/physics/PhysicsBall';
 import VarletPoint from './VarletPoint';
+import Rectangle from './Rectangle';
 
 @Component
 export default class PhysicsRenderer extends CanvasContainer {
+
+    get bounds(): Rectangle {
+        return new Rectangle(0, 0, this.width, this.height);
+    }
+
     clearCanvas() {
         const canvas = this.domElement;
         const cw = canvas.width;

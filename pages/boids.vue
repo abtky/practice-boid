@@ -6,11 +6,11 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
-import SteeredVehicle from '../assets/ts/SteeredVehicle';
+import SteeredVehicle from '../assets/scripts/boids/SteeredVehicle';
 import BoidsRenderer from '../components/boids/BoidsRenderer';
-import BoidsGUI from '../assets/ts/BoidsGUI';
-import Worker from '~/assets/ts/index.worker';
-import WorkerController from '../assets/ts/WorkerController';
+import BoidsGUI from '../assets/scripts/boids/BoidsGUI';
+import Worker from '../assets/scripts/boids/index.worker';
+import WorkerController from '../assets/scripts/boids/WorkerController';
 
 const NUM_VEHICLES: number = 300;
 

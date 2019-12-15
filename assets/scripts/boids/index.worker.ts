@@ -1,5 +1,5 @@
 import SteeredVehicle from './SteeredVehicle';
-import WorkerController, { SimpleVehicleList } from '~/assets/ts/WorkerController';
+import WorkerController, { SimpleVehicleList } from '~/assets/scripts/boids/WorkerController';
 
 addEventListener('message', e => {
     const { data } = e;

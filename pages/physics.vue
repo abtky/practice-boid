@@ -49,6 +49,8 @@ class Physics extends Vue {
         const elapsedTime: number = ( now - this.previousTime ) / 1000;
 
         this.point.update();
+        this.point.constrain(this.$refs.canvas.bounds);
+
         this.eulerBall.update(elapsedTime);
         this.$refs.canvas.clearCanvas();
         this.$refs.canvas.drawBall(this.eulerBall);
